@@ -13,6 +13,10 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const mongo = require('mongodb');
 const mongoose = require('mongoose');
+// connect to the db
+mongoose.connect('mongodb://@localhost:27017/learn')
+  .then(() =>  console.log('connection succesful'))
+  .catch((err) => console.error(err));
 
 
 const indexRouter = require('./routes/index');
