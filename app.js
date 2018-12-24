@@ -10,7 +10,6 @@ const expressValidator = require('express-validator');
 const flash = require('connect-flash');
 const session = require('express-session');
 const passport = require('passport');
-const LocalStrategy = require('passport-local').Strategy;
 const mongo = require('mongodb');
 const mongoose = require('mongoose');
 // connect to the db
@@ -18,9 +17,12 @@ mongoose.connect('mongodb://@localhost:27017/learn')
   .then(() =>  console.log('connection succesful'))
   .catch((err) => console.error(err));
 
+const db = mongoose.connection;
+async = require('async')
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
+const classesRouter = require('./routes/classes');
 
 const app = express();
 
@@ -35,6 +37,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+  // Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
 // Express Session
 app.use(session({
   secret: 'IDKDF-9DF989-89DF89D',
@@ -42,9 +49,6 @@ app.use(session({
   resave: true
   }));
 
-  // Passport
-app.use(passport.initialize());
-app.use(passport.session());
 
 // Express Validator
 app.use(expressValidator({
@@ -67,12 +71,16 @@ app.use(expressValidator({
 // Connect Flash 
 app.use(flash());
 app.use(function (req, res, next) {
-  res.locals.messages = require('express-messages')(req, res);
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.error = req.flash('error')
+  // res.locals.messages = require('express-messages')(req, res)();
   next();
 });
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/classes', classesRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

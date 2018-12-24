@@ -1,9 +1,52 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+const RegisterController = require('../controllers/users')
+var User = require('../models/users');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy
+
+
+router.get('/register', RegisterController.registerGet)
+
+/* Register User */
+router.post('/register', RegisterController.registerPost);
+
+router.post('/login', passport.authenticate({failureRedirect: '/', failureFlash: true}), (req, res, next) => {
+  req.flash('success_msg', 'You are now logged in');
+  const userType = req.user.type;
+  res.redirect(`/${userType}s/classes`);
+
+  passport.use(new LocalStrategy(
+    function(username, password, done) {
+      User.getUserByUsername(username, function(err, user){
+        if(err) throw err;
+        if(!user) {
+          return done(null, false, {message: `Unknown user ${username}`});
+        }
+        console.log(user)
+        User.comparePassword(password, user.password, function(err, isMatch){
+          if(err) return done(err);
+          if(isMatch) {
+            return done(null, user)
+          } else {
+            console.log('Invalid Password');
+            return done(null, false, {message: 'Invalid Password'})
+          }
+        })
+      })
+    }
+  ));
+
+  passport.serializeUser((user, done) => {
+    done(null, user._id);
+  });
+
+  passport.deserializeUser((id, done) => {
+    User.getUserById(id, (err, user) => {
+      done(err, user);
+    })
+  })
 });
 
 module.exports = router;
