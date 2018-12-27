@@ -28,3 +28,23 @@ const InstructorSchema = mongoose.Schema({
 });
 
 let Instructor = module.exports = mongoose.model('instructor', InstructorSchema);
+
+module.exports.getInstructorByUsername = (username, callback) => {
+    //define the query
+    const query = {username, }
+    Instructor.findOne(query, callback);
+}
+
+module.exports.register = (info, callback) => {
+    const instructor_username = info['instructor_username'];
+    const class_id = info['class_id'];
+    const class_title = info['class_title'];
+    // define the query
+    const query = {username: instructor_username};
+    Instructor.findOneAndUpdate(
+        query,
+        {$push: {"classes": {class_id, class_title,}}},
+        {safe: true, upsert: true},
+        callback
+    );
+}

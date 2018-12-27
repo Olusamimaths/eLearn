@@ -28,3 +28,17 @@ module.exports.getClasses = function(callback, limit) {
 module.exports.getClassById = function(id, callback) {
     Class.findById(id, callback);
 }
+
+module.exports.addLesson = function(info, callback) {
+    const class_id = info['class_id'];
+    const lesson_number = info['lesson_number'];
+    const lesson_title = info['lesson_title'];
+    const lesson_body = info['lesson_body']
+
+    Class.findByIdAndUpdate(
+        class_id,
+        {$push: {"lessons": {lesson_number, lesson_title, lesson_body}}},
+        {safe: true, upsert:true},
+        callback
+    )
+}

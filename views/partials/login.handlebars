@@ -1,3 +1,11 @@
+{{#if user}}
+    <h2>Welcome Back {{user.username}}</h2>
+    <ul class="alt">
+        <li><a href="/{{user.type}}s/classes">My Classes</a> </li>
+        <li><a href="/users/logout">Logout</a> </li>
+    </ul>
+{{else}}
+
 	<h5>Student & Instructor Login</h5>
 <form action="/users/login" method="POST">
     <label for="username">Username:</label>
@@ -8,3 +16,4 @@
     <br><br>
     <button type="submit" name="submit" value="submit" class="btn"> Submit </button>
 </form>
+{{/if}}

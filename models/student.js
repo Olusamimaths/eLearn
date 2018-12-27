@@ -28,3 +28,8 @@ const StudentSchema = mongoose.Schema({
 });
 
 let Student = module.exports = mongoose.model('student', StudentSchema);
+
+module.exports.getStudentByUsername = (username, callback) => {
+    const query = {username, }
+    Student.findOne(query, callback);
+}

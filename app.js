@@ -20,9 +20,12 @@ mongoose.connect('mongodb://@localhost:27017/learn')
 const db = mongoose.connection;
 async = require('async')
 
+// Import the routes
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const classesRouter = require('./routes/classes');
+const studentsRouter = require('./routes/students');
+const instructorRouter = require('./routes/instructors')
 
 const app = express();
 
@@ -31,9 +34,11 @@ app.set('views', path.join(__dirname, 'views'));
 app.engine('handlebars', exphbs({defaultLayout: 'main'}));
 app.set('view engine', 'handlebars');
 
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json())
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -68,12 +73,32 @@ app.use(expressValidator({
   }
 }));
 
+const student1 = {
+  "_id" : "5c21269c3baa6f171c071d19",
+  "email" : "another@gmail.com",
+  "username" : "solathecoder",
+  "password" : "$2a$10$AvjP7W6K6Xo6MMb.x/bH.OMniNxKCyJHs30huM0HWejLv.LZaFXwm",
+  "type" : "student",
+  "__v" : 0
+}
+const instrutor = {
+  "_id" : "5c2417c0b1206813386db5b6",
+  "email" : "another@gmail.com",
+  "username" : "Admin",
+  "password" : "$2a$10$HRvyhJ7dx4NVWQNsgKmJOOsaMSDuqKQGeAqb3qId0zzYVSoMAHUQ6",
+  "type" : "instructor",
+  "__v" : 0
+}
 // Connect Flash 
 app.use(flash());
 app.use(function (req, res, next) {
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
-  res.locals.error = req.flash('error')
+  res.locals.error = req.flash('error');
+  res.locals.user = req.user = instrutor || null;
+  if(req.user){
+    res.locals.type = instrutor.type;
+  }
   // res.locals.messages = require('express-messages')(req, res)();
   next();
 });
@@ -81,6 +106,9 @@ app.use(function (req, res, next) {
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/classes', classesRouter);
+app.use('/students', studentsRouter);
+app.use('/instructors', instructorRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

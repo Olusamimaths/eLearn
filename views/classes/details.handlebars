@@ -11,11 +11,11 @@
         {{/each}}
     </ul>
 {{#if user}}
-    <form id="classRegForm" method="POST" action="/students/classes/register">
+    <form  method="post" action="/{{type}}s/classes/register">
         <input type="hidden" name="student_id" value="{{user._id}}">
         <input type="hidden" name="class_id" value="{{class._id}}">
         <input type="hidden" name="class_title" value="{{class.title}}">
-        <input type="button" value="Register for this class" class="button">
+        <input type="submit" value="Register for this class" class="button">
     </form>
 {{else}}
     <p>You must be logged in to register for this class</p>
