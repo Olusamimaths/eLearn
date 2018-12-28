@@ -5,7 +5,7 @@ const RegisterController = require('../controllers/users')
 var User = require('../models/users');
 var passport = require('passport');
 const bcrypt = require('bcryptjs')
-var LocalStrategy = require('passport-local').Strategy
+var LocalStrategy = require('passport-local').Strategy;
 
 
 router.get('/register', RegisterController.registerGet)
@@ -14,16 +14,7 @@ router.get('/register', RegisterController.registerGet)
 router.post('/register', RegisterController.registerPost);
 
 router.post('/login', (req, res, next) => {  
-  
-  // passport.serializeUser((user, done) => {
-  //   done(null, user._id);
-  // });
-
-  // passport.deserializeUser((id, done) => {
-  //   User.getUserById(id, (err, user) => {
-  //     done(err, user);
-  //   })
-  // })
+  // passport.authenticate('local'{failureRedirect:'/', failureFlash:   true}), 
   // passport.use(new LocalStrategy(
   //   function(username, password, done) {
   //     User.getUserByUsername(username, function(err, user){
@@ -47,8 +38,17 @@ router.post('/login', (req, res, next) => {
   //   }
   // ));
     req.flash('success_msg', 'You are now logged in');
-    const userType = req.user.type;
+    // const userType = req.user.type;
     res.redirect(`/${userType}s/classes`);
 });
 
+passport.serializeUser((user, done) => {
+  done(null, user._id);
+});
+
+passport.deserializeUser((id, done) => {
+  User.getUserById(id, (err, user) => {
+    done(err, user);
+  })
+})
 module.exports = router;

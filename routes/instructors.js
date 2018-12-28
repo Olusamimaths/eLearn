@@ -44,11 +44,4 @@ router.post('/classes/:id/lessons/new', (req, res, next) => {
     })
 });
 
-router.get('/:id/lessons', (req, res, next) => {
-    Class.getClassById([req.params.id], (err, classname) => {
-        if(err) throw err;
-        res.render('classes/lessons', {title:'Lessons', class:classname})
-    })
-});
-
 module.exports = router;
